@@ -419,7 +419,12 @@ class MockCollection extends Collection
 
     public function findOneAndUpdate($filter, $update, array $options = [])
     {
-        // TODO: Implement this function
+        $found = $this->findOne($filter, $options);
+        if ($found) {
+            $this->updateOne(['_id' => $found['_id']], $update, $options);
+            return $this->findOne(['_id' => $found['_id']]);
+        }
+        return $found;
     }
 
     public function getCollectionName()
