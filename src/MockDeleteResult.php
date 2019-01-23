@@ -8,11 +8,10 @@ use MongoDB\Exception\BadMethodCallException;
 
 class MockDeleteResult extends DeleteResult
 {
-
     protected $isAcknowledged;
     protected $deletedCount;
 
-    public function __construct(bool $isAcknowledged, int $deletedCount)
+    public function __construct(int $deletedCount, bool $isAcknowledged = true)
     {
         $this->isAcknowledged = $isAcknowledged;
         $this->deletedCount = $deletedCount;

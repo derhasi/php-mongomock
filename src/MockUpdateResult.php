@@ -8,17 +8,20 @@ class MockUpdateResult extends UpdateResult
     private $matched;
     private $modified;
     private $upsertedIds;
+    private $isAcknowledged;
 
     /**
      * @param int $matched
      * @param int $modified
      * @param array $upsertedIds
+     * @param bool $isAcknowledged
      */
-    public function __construct($matched=0, $modified=0, array $upsertedIds=[])
+    public function __construct($matched=0, $modified=0, array $upsertedIds=[], $isAcknowledged=true)
     {
         $this->matched = $matched;
         $this->modified = $matched;
         $this->upsertedIds = $upsertedIds;
+        $this->acknowledged = $isAcknowledged;
     }
 
     public function getMatchedCount()
@@ -43,7 +46,7 @@ class MockUpdateResult extends UpdateResult
 
     public function isAcknowledged()
     {
-        return true;
+        return $this->acknowledged;
     }
 
 }

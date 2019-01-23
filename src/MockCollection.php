@@ -388,7 +388,7 @@ class MockCollection extends Collection
             if ($matcher($doc)) {
                 unset($this->documents[$i]);
                 $this->documents = array_values($this->documents);
-                return new MockDeleteResult(true, 1);
+                return new MockDeleteResult(1, true);
             }
         }
     }

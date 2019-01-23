@@ -7,13 +7,16 @@ use MongoDB\InsertManyResult;
 class MockInsertManyResult extends InsertManyResult
 {
     private $insertedIds;
+    private $isAcknowledged;
 
     /**
      * @param array $insertedIds
+     * @param bool $isAcknowledged
      */
-    public function __construct(array $insertedIds)
+    public function __construct(array $insertedIds, $isAcknowledged=true)
     {
         $this->insertedIds = $insertedIds;
+        $this->acknowledged = $isAcknowledged;
     }
 
     public function getInsertedCount()
@@ -28,7 +31,7 @@ class MockInsertManyResult extends InsertManyResult
 
     public function isAcknowledged()
     {
-        return true;
+        return $this->acknowledged;
     }
 
 }

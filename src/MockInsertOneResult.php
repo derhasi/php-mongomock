@@ -7,11 +7,13 @@ use MongoDB\InsertOneResult;
 class MockInsertOneResult extends InsertOneResult
 {
     private $insertedId;
+    private $isAcknowledged;
 
     /** @noinspection PhpMissingParentConstructorInspection */
-    public function __construct($insertedId)
+    public function __construct($insertedId, $isAcknowledged=true)
     {
         $this->insertedId = $insertedId;
+        $this->acknowledged = $isAcknowledged;
     }
 
     public function getInsertedCount()
@@ -26,7 +28,7 @@ class MockInsertOneResult extends InsertOneResult
 
     public function isAcknowledged()
     {
-        return true;
+        return $this->acknowledged;
     }
 
 }
