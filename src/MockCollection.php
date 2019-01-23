@@ -10,6 +10,7 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\Collection;
+use MongoDB\DeleteResult;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
 use MongoDB\Model\IndexInfoIteratorIterator;
@@ -387,7 +388,7 @@ class MockCollection extends Collection
             if ($matcher($doc)) {
                 unset($this->documents[$i]);
                 $this->documents = array_values($this->documents);
-                return;
+                return new MockDeleteResult(true, 1);
             }
         }
     }

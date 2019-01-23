@@ -7,6 +7,7 @@ use Helmich\MongoMock\MockCursor;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\Collection;
+use MongoDB\DeleteResult;
 use MongoDB\InsertManyResult;
 use MongoDB\InsertOneResult;
 use MongoDB\UpdateResult;
@@ -252,10 +253,14 @@ class MockCollectionTest extends TestCase
             ['foo' => 'bar', 'bar' => 1],
             ['foo' => 'baz', 'bar' => 2],
         ]);
-        $this->col->deleteOne(['bar' => 1]);
+        $deleteResult = $this->col->deleteOne(['bar' => 1]);
 
         assertThat($this->col->count(['bar' => 1]), equalTo(1));
         assertThat($this->col->count(['bar' => 2]), equalTo(1));
+
+        assertThat($deleteResult, isInstanceOf(DeleteResult::class));
+        assertThat($deleteResult->isAcknowledged(), equalTo(true));
+        assertThat($deleteResult->getDeletedCount(), equalTo(1));
     }
 
     /**
