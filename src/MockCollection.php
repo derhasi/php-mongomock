@@ -76,6 +76,9 @@ class MockCollection extends Collection
         'root' => BSONDocument::class
     ];
 
+    /** @var bool */
+    protected $writeResultIsAcknowledged = true;
+
     /**
      * @param string       $name
      * @param MockDatabase $db
@@ -95,6 +98,19 @@ class MockCollection extends Collection
         if (isset($this->options['typeMap'])) {
             $this->typeMap = $this->options['typeMap'];
         }
+    }
+
+    /**
+     * Helper method to set the write result acknowledgement to a specific value.
+     *
+     * @param bool $acknowledge
+     *
+     * @return $this
+     */
+    public function mockSetWriteResultIsAcknowledged(bool $acknowledge)
+    {
+        $this->writeResultIsAcknowledged = $acknowledge;
+        return $this;
     }
 
     public function insertOne($document, array $options = [])
@@ -125,7 +141,7 @@ class MockCollection extends Collection
 
         $this->documents[] = $document;
 
-        return new MockInsertOneResult($document['_id']);
+        return new MockInsertOneResult($document['_id'], $this->writeResultIsAcknowledged);
     }
 
     public function insertMany(array $documents, array $options = [])
@@ -134,7 +150,7 @@ class MockCollection extends Collection
             return $this->insertOne($doc, $options)->getInsertedId();
         }, $documents);
 
-        return new MockInsertManyResult($insertedIds);
+        return new MockInsertManyResult($insertedIds, $this->writeResultIsAcknowledged);
     }
 
     public function deleteMany($filter, array $options = [])
@@ -154,13 +170,13 @@ class MockCollection extends Collection
         foreach ($this->documents as $i => &$doc) {
             if ($matcher($doc)) {
                 $this->updateCore($doc, $update);
-                return new MockUpdateResult(1, 1);
+                return new MockUpdateResult(1, 1, [], $this->writeResultIsAcknowledged);
             }
         }
 
         $result = $this->updateUpsert($filter, $update, $options, false);
         $upserted = $result === null ? [] : $result->getInsertedIds();
-        return new MockUpdateResult(0, 0, $upserted);
+        return new MockUpdateResult(0, 0, $upserted, $this->writeResultIsAcknowledged);
     }
 
     public function updateMany($filter, $update, array $options = [])
@@ -178,7 +194,7 @@ class MockCollection extends Collection
 
         $result = $this->updateUpsert($filter, $update, $options, $matched !== 0);
         $upserted = $result === null ? [] : $result->getInsertedIds();
-        return new MockUpdateResult($matched, $matched, $upserted);
+        return new MockUpdateResult($matched, $matched, $upserted, $this->writeResultIsAcknowledged);
     }
 
     private function updateUpsert($filter, $update, $options, $anyUpdates)
@@ -388,7 +404,7 @@ class MockCollection extends Collection
             if ($matcher($doc)) {
                 unset($this->documents[$i]);
                 $this->documents = array_values($this->documents);
-                return new MockDeleteResult(1, true);
+                return new MockDeleteResult(1, $this->writeResultIsAcknowledged);
             }
         }
     }
