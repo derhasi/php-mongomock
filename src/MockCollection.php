@@ -368,8 +368,13 @@ class MockCollection extends Collection
                 $name .= $field . '_1';
             }
         }
+        $options['name'] = $name;
 
-        $this->indices[$name] = new Index($key, $options);
+        $dbName = $this->db ? $this->db->getDatabaseName() : "unknown";
+        $options['ns'] = $dbName . '.' . $this->name;
+        $options['key'] = $key;
+
+        $this->indices[$name] = $options;
     }
 
     public function drop(array $options = [])
@@ -465,20 +470,7 @@ class MockCollection extends Collection
 
     public function listIndexes(array $options = [])
     {
-        $indices = [];
-        $dbName = $this->db ? $this->db->getDatabaseName() : "unknown";
-
-        foreach ($this->indices as $name => $index) {
-            $indices[] = [
-                'v'      => 1,
-                'unique' => isset($index->getOptions()['unique']) ? $index->getOptions()['unique'] : false,
-                'key'    => $index->getKey(),
-                'name'   => $name,
-                'ns'     => $dbName . '.' . $this->name,
-            ];
-        }
-
-        return new IndexInfoIteratorIterator(new ArrayIterator($indices));
+        return new IndexInfoIteratorIterator(new ArrayIterator($this->indices));
     }
 
     public function replaceOne($filter, $replacement, array $options = [])
