@@ -3,7 +3,6 @@
 namespace Helmich\MongoMock;
 
 use ArrayIterator;
-use Helmich\MongoMock\Log\Index;
 use Helmich\MongoMock\Log\Query;
 use MongoDB\BSON;
 use MongoDB\BSON\Binary;
